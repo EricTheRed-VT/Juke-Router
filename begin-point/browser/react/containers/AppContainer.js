@@ -33,7 +33,6 @@ export default class AppContainer extends Component {
       // .then(artist => this.onArtistsLoad(artists)))
     Promise.all([albumList, artistList])
     .then(([albums, artists]) => {
-      console.log('albums', albums)
       return this.onLoad(convertAlbums(albums), artists)
     })
 
@@ -125,6 +124,7 @@ export default class AppContainer extends Component {
   selectArtist (artistId) {
     let artist = axios.get(`/api/artists/${artistId}`)
       .then(res => res.data)
+      // .then((artist) => this.setState({selectedArtist: artist}))
 
     let albums = axios.get(`/api/artists/${artistId}/albums`)
       .then(res => res.data)
