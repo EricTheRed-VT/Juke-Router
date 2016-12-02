@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-
 import initialState from '../initialState';
 import AUDIO from '../audio';
-
 
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
@@ -15,19 +13,30 @@ export default class AppContainer extends Component {
   constructor (props) {
     super(props);
     this.state = initialState;
-
+    this.selectArtist = this.selectArtist.bind(this);
+    this.deselectArist = this.deselectArtist.bind(this);
     this.toggle = this.toggle.bind(this);
     this.toggleOne = this.toggleOne.bind(this);
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.deselectAlbum = this.deselectAlbum.bind(this);
+    this.onLoad = this.onLoad.bind(this);
   }
 
   componentDidMount () {
-    axios.get('/api/albums/')
+    var albumList = axios.get('/api/albums/')
       .then(res => res.data)
-      .then(album => this.onLoad(convertAlbums(album)));
+      // .then(albums => this.onAlbumsLoad(convertAlbums(albums)))
+    var artistList = axios.get('/api/artists/')
+      .then(res => res.data)
+      // .then(artist => this.onArtistsLoad(artists)))
+    Promise.all([albumList, artistList])
+    .then(([albums, artists]) => {
+      console.log('albums', albums)
+      return this.onLoad(convertAlbums(albums), artists)
+    })
+
 
     AUDIO.addEventListener('ended', () =>
       this.next());
@@ -35,10 +44,22 @@ export default class AppContainer extends Component {
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
   }
 
-  onLoad (albums) {
+  onLoad (albums, artists) {
+    this.setState({
+      albums, artists
+    })
+  }
+
+  onAlbumsLoad (albums) {
     this.setState({
       albums: albums
     });
+  }
+
+  onArtistsLoad (artists) {
+    this.setState({
+      artists: artists
+    })
   }
 
   play () {
@@ -101,6 +122,18 @@ export default class AppContainer extends Component {
     this.setState({ selectedAlbum: {}});
   }
 
+  selectArtist (artistId) {
+    axios.get(`/api/artists/${artistId}`)
+      .then(res => res.data)
+      .then(artist => this.setState({
+        selectedArtist: artist
+      }));
+  }
+
+  deselectArtist () {
+    this.setState({ selectedArtist: {}});
+  }
+
   render () {
     return (
       <div id="main" className="container-fluid">
@@ -109,14 +142,17 @@ export default class AppContainer extends Component {
         </div>
         <div className="col-xs-10">
         {
-          this.props.children ? 
-          React.cloneElement(this.props.children, { 
+          this.props.children ?
+          React.cloneElement(this.props.children, {
             album: this.state.selectedAlbum,
             currentSong: this.state.currentSong,
             isPlaying: this.state.isPlaying,
             toggleOne: this.toggleOne,
             albums: this.state.albums,
-            selectAlbum: this.selectAlbum
+            selectAlbum: this.selectAlbum,
+            artist: this.state.selectedArtist,
+            artists: this.state.artists,
+            selectArtist: this.selectArtist
           }) : null
         }
         </div>
