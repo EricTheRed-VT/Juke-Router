@@ -123,12 +123,23 @@ export default class AppContainer extends Component {
   }
 
   selectArtist (artistId) {
-    axios.get(`/api/artists/${artistId}`)
+    let artist = axios.get(`/api/artists/${artistId}`)
       .then(res => res.data)
-      .then(artist => this.setState({
-        selectedArtist: artist
-      }));
+
+    let albums = axios.get(`/api/artists/${artistId}/albums`)
+      .then(res => res.data)
+
+    let songs = axios.get(`/api/artists/${artistId}/songs`)
+      .then(res => res.data)
+
+    Promise.all([artist, albums, songs])
+      .then(([artist, albums, songs]) => {
+        artist.albums = albums;
+        artist.songs = songs;
+        return this.setState({selectedArtist: artist})
+      });
   }
+
 
   deselectArtist () {
     this.setState({ selectedArtist: {}});
