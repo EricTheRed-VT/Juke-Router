@@ -5,6 +5,7 @@ import AUDIO from '../audio';
 
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
+import {hashHistory} from 'react-router';
 
 import { convertAlbum, convertAlbums, convertSongs, skip } from '../utils';
 
@@ -34,7 +35,7 @@ export default class AppContainer extends Component {
     Promise.all([albumList, artistList])
     .then(([albums, artists]) => {
       return this.onLoad(convertAlbums(albums), artists)
-    })
+    }).catch(this.sendToErrorPage)
 
 
     AUDIO.addEventListener('ended', () =>
@@ -114,7 +115,7 @@ export default class AppContainer extends Component {
       .then(res => res.data)
       .then(album => this.setState({
         selectedAlbum: convertAlbum(album)
-      }));
+      })).catch(this.sendToErrorPage);
   }
 
   deselectAlbum () {
@@ -137,12 +138,18 @@ export default class AppContainer extends Component {
         artist.albums = convertAlbums(albums);
         artist.songs = convertSongs(songs);
         return this.setState({selectedArtist: artist})
-      });
+      }).catch(this.sendToErrorPage);
   }
 
 
   deselectArtist () {
     this.setState({ selectedArtist: {}});
+  }
+  
+  sendToErrorPage () {
+    console.log("sending to error page!!!!")
+    hashHistory.push('/blah')
+    
   }
 
   render () {

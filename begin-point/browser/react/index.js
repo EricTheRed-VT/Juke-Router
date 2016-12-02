@@ -6,6 +6,8 @@ import Album from './components/Album';
 import Artists from './components/Artists';
 import Artist from './components/Artist';
 import Songs from './components/Songs';
+import PageNotFound from './components/PageNotFound';
+
 
 import { Router, Route, hashHistory, IndexRedirect } from 'react-router';
 
@@ -22,6 +24,7 @@ ReactDOM.render(
         <Route path="albums" component={Albums}/>
         <Route path="songs" component={Songs}/>
       </Route>
+      <Route path='*' component={PageNotFound} />
     </Route >
   </Router>,
   document.getElementById('app')
