@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router'
 import Songs from '../components/Songs';
+import Albums from '../components/Albums';
+
 
 
 export default class Artist extends Component {
@@ -15,30 +17,33 @@ export default class Artist extends Component {
 
 
   render(){
-  	let artist = this.props.artist;
-  	console.log(artist)
-  	return (
-  		<div>
-  		  <h3>{artist.name}</h3>
-  		  <div>{artist.albums && artist.albums.map(album => (
-          <div className="col-xs-4" key={ album.id }>
-            <Link to={`/albums/${album.id}`} className="thumbnail">
-              <img src={ album.imageUrl } />
-              <div className="caption">
-                <h5>
-                  <span>{ album.name }</span>
-                </h5>
-                <small>{ album.songs.length } songs</small>
-              </div>
-            </Link>
-          </div>
-        ))}</div>
+	const selectedArtist = this.props.selectedArtist;
+	const children = this.props.children;
+	const propsToPassToChildren = {
+		albums: selectedArtist.albums,
+	  	songs: selectedArtist.songs,
+	    currentSong: this.props.currentSong,
+	    isPlaying: this.props.isPlaying,
+	    toggleOne: this.props.toggleOne 
+	}
+
+	return (<div>
+	  <h3>{ selectedArtist.name }</h3>
+	  <ul className="nav nav-tabs">
+	    <li><Link to={`/artists/${selectedArtist.id}/albums`}>ALBUMS</Link></li>
+	    <li><Link to={`/artists/${selectedArtist.id}/songs`}>SONGS</Link></li>
+	  </ul>
+	  { children && React.cloneElement(children, propsToPassToChildren) }
+	</div>)
+
+  	/** <div>
+  		  <Albums albums={artist.albums}/>
   		  <Songs
         songs={artist.songs}
         currentSong={this.props.currentSong}
         isPlaying={this.props.isPlaying}
         toggleOne={this.props.toggleOne} />
   		</div>
-  	)
+  	**/
   }
 }

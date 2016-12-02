@@ -6,7 +6,7 @@ import AUDIO from '../audio';
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 
-import { convertAlbum, convertAlbums, skip } from '../utils';
+import { convertAlbum, convertAlbums, convertSongs, skip } from '../utils';
 
 export default class AppContainer extends Component {
 
@@ -134,8 +134,8 @@ export default class AppContainer extends Component {
 
     Promise.all([artist, albums, songs])
       .then(([artist, albums, songs]) => {
-        artist.albums = albums;
-        artist.songs = songs;
+        artist.albums = convertAlbums(albums);
+        artist.songs = convertSongs(songs);
         return this.setState({selectedArtist: artist})
       });
   }
@@ -161,7 +161,7 @@ export default class AppContainer extends Component {
             toggleOne: this.toggleOne,
             albums: this.state.albums,
             selectAlbum: this.selectAlbum,
-            artist: this.state.selectedArtist,
+            selectedArtist: this.state.selectedArtist,
             artists: this.state.artists,
             selectArtist: this.selectArtist
           }) : null
