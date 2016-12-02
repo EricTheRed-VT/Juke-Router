@@ -4,8 +4,7 @@ import axios from 'axios';
 import initialState from '../initialState';
 import AUDIO from '../audio';
 
-import Albums from '../components/Albums.js';
-import Album from '../components/Album';
+
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 
@@ -110,17 +109,15 @@ export default class AppContainer extends Component {
         </div>
         <div className="col-xs-10">
         {
-          this.state.selectedAlbum.id ?
-          <Album
-            album={this.state.selectedAlbum}
-            currentSong={this.state.currentSong}
-            isPlaying={this.state.isPlaying}
-            toggleOne={this.toggleOne}
-          /> :
-          <Albums
-            albums={this.state.albums}
-            selectAlbum={this.selectAlbum}
-          />
+          this.props.children ? 
+          React.cloneElement(this.props.children, { 
+            album: this.state.selectedAlbum,
+            currentSong: this.state.currentSong,
+            isPlaying: this.state.isPlaying,
+            toggleOne: this.toggleOne,
+            albums: this.state.albums,
+            selectAlbum: this.selectAlbum
+          }) : null
         }
         </div>
         <Player
